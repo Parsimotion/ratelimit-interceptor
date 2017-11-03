@@ -23,8 +23,9 @@ class RateLimitInterceptor
   _doCall: ({ target, method, args }, callback) =>
     debug.general "Doing call %s - %j", method, args
     debug.stats "%j", @_stats()
-    target[method](args...).asCallback callback
-
+    target[method](args...)
+    .finally => debug.stats "%j", @_stats()
+    .asCallback callback
 
   _stats: => { idle: @q.idle(), length: @q.length(), running: @q.running() }
 
