@@ -1,2 +1,2 @@
 
-module.exports = require "./ratelimit-interceptor"
+module.exports = require "./ratelimit.interceptor"
