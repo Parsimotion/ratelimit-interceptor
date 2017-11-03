@@ -7,7 +7,7 @@ debug =
 
 class RateLimitInterceptor
 
-  constructor: (concurrency) ->
+  constructor: (concurrency = 1) ->
     @q = async.queue @_doCall, concurrency
     Promise.promisifyAll @q
 
