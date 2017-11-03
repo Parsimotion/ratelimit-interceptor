@@ -1,6 +1,6 @@
 {
   "name": "ratelimit-interceptor",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "ratelimit-interceptor",
   "main": "index.js",
   "scripts": {
