@@ -12,7 +12,8 @@ class RateLimitInterceptor
     Promise.promisifyAll @q
 
   get: (target, property, receiver) ->
-    return target[property] unless isFunction(target[property])
+    if not isFunction(target[property]) or property is 'valueOf'
+      return target[property] 
     
     (args...) =>
       debug.general "Enqueue [%s]/%d", property, args.length
