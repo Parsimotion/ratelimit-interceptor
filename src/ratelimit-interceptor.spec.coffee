@@ -45,7 +45,7 @@ describe "RateLimit Interceptor", ->
       .tap -> client.m1.getCall(0).should.be.calledWith 1
       .tap -> client.m1.getCall(1).should.be.calledWith 2
 
-  describe "To or to not intercept methods", ->
+  describe.only "To or to not intercept methods", ->
 
     assertion_evaluator = (itQuote, shouldIntercept, opts)   =>
       it itQuote, ()->
@@ -58,8 +58,13 @@ describe "RateLimit Interceptor", ->
     )
 
     assertion_evaluator(
-      "should intercept if the method is in the toInterceptMethods list",
+      "should intercept if the method is in the toIntercept list",
       true, { toInterceptMethods: ["test"] }
+    )
+
+    assertion_evaluator(
+      "should intercept if the method is in the toIntercept list and there is a NotIntercept list ",
+      true, { toInterceptMethods: ["test"], toNotInterceptMethods: ["otherMethod"] }
     )
 
     assertion_evaluator(
@@ -68,16 +73,16 @@ describe "RateLimit Interceptor", ->
     )
 
     assertion_evaluator(
-      "should not intercept if the method in not in the toInterceptMethods list and there is no toNotInterceptMethods",
+      "should not intercept if the method isn't in the toIntercept list and there is no toNotIntercept list",
       false, { toInterceptMethods: ["method"] }
     )
 
     assertion_evaluator(
-      "should not intercept if the method is in the toNotInterceptMethods list",
+      "should not intercept if the method is in the toNotIntercept list",
       false, { toNotInterceptMethods: ["test"] }
     )
 
     assertion_evaluator(
-      "should not intercept if the method is in the toNotInterceptMethods list and not in the other",
+      "should not intercept if the method is in the toNotIntercept list and not in the toInercept list",
       false, { toNotInterceptMethods: ["test"], toInterceptMethods: ["oneMethod"] }
     )
