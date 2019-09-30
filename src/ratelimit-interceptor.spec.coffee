@@ -1,17 +1,17 @@
 Promise = require "bluebird"
-interceptor = require "./ratelimit.interceptor"
+RateLimitInterceptor = require "./ratelimit.interceptor"
+interceptor = require "./index"
 should = require "should"
 sinon = require "sinon"
 require "should-sinon"
-
 
 describe "RateLimit Interceptor", ->
 
   { client } = {}
 
-  interceptWith = (promise, concurrency) ->
+  interceptWith = (promise, concurrency, opts = {}) ->
     client = { m1: sinon.stub().returns(promise) }
-    interceptor client, concurrency
+    interceptor client, concurrency, opts
 
   it "should called to original method", ->
     param = "A parameter"
@@ -44,3 +44,35 @@ describe "RateLimit Interceptor", ->
       .delay 70
       .tap -> client.m1.getCall(0).should.be.calledWith 1
       .tap -> client.m1.getCall(1).should.be.calledWith 2
+
+  describe "To or to not intercept methods", ->
+
+    assertion_evaluator = (itQuote, shouldIntercept, opts)   =>
+      it itQuote, ()->
+        rateLimitInterceptor = new RateLimitInterceptor(1, opts)
+        rateLimitInterceptor._shouldIntercept("test").should.be[shouldIntercept]()
+
+    assertion_evaluator(
+      "should always intercept if the opts are empty",
+      true
+    )
+
+    assertion_evaluator(
+      "should intercept if the method is in the toInterceptMethods list",
+      true, { toInterceptMethods: ["test"] }
+    )
+
+    assertion_evaluator(
+      "should intercept if the method isn't in any of the lists",
+      true, { toNotInterceptMethods: ["oneMethod"], toInterceptMethods: ["otherMethod"] }
+    )
+
+    assertion_evaluator(
+      "should not intercept if the method is in the toNotInterceptMethods list",
+      false, { toNotInterceptMethods: ["test"] }
+    )
+
+    assertion_evaluator(
+      "should not intercept if the method is in the toNotInterceptMethods list and not in the other",
+      false, { toNotInterceptMethods: ["test"], toInterceptMethods: ["oneMethod"] }
+    )
