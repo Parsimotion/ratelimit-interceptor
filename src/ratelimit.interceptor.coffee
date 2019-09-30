@@ -15,7 +15,7 @@ module.exports = class RateLimitInterceptor
     Promise.promisifyAll @q
 
   get: (target, property, receiver) ->
-    if not isFunction(target[property]) or property is 'valueOf' or not @_shouldIntercept()
+    if not isFunction(target[property]) or property is 'valueOf' or not @_shouldIntercept(property)
       return target[property] 
     
     (args...) =>
