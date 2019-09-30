@@ -26,7 +26,8 @@ module.exports = class RateLimitInterceptor
       .finally => debug.stats "%j", @_stats()
 
   _shouldIntercept: (property) => 
-    (includes this.toInterceptMethods, property) or (not includes this.toNotInterceptMethods, property)
+    (this.toInterceptMethods? includes this.toInterceptMethods, property) or 
+    not includes this.toNotInterceptMethods, property
 
   _doCall: ({ target, method, args }, callback) =>
     debug.general "Doing call %s - %j", method, args
