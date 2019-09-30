@@ -45,7 +45,7 @@ describe "RateLimit Interceptor", ->
       .tap -> client.m1.getCall(0).should.be.calledWith 1
       .tap -> client.m1.getCall(1).should.be.calledWith 2
 
-  describe.only "To or to not intercept methods", ->
+  describe "To or to not intercept methods", ->
 
     assertion_evaluator = (itQuote, shouldIntercept, opts)   =>
       it itQuote, ()->
