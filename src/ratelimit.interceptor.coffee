@@ -1,18 +1,21 @@
 isFunction = require "lodash.isfunction"
+includes = require "lodash.includes"
 Promise = require "bluebird"
 async = require "async"
 debug = 
   general: require("debug") "ratelimit-interceptor"
   stats: require("debug") "ratelimit-interceptor:stats"
 
-class RateLimitInterceptor
+module.exports = class RateLimitInterceptor
 
-  constructor: (concurrency = 1) ->
+  constructor: (concurrency = 1, { toInterceptMethods, toNotInterceptMethods } = {}) ->
+    @toInterceptMethods = toInterceptMethods
+    @toNotInterceptMethods = toNotInterceptMethods
     @q = async.queue @_doCall, concurrency
     Promise.promisifyAll @q
 
   get: (target, property, receiver) ->
-    if not isFunction(target[property]) or property is 'valueOf'
+    if not isFunction(target[property]) or property is 'valueOf' or not @_shouldIntercept(property)
       return target[property] 
     
     (args...) =>
@@ -22,6 +25,11 @@ class RateLimitInterceptor
       @q.pushAsync { target, method: property, args }
       .finally => debug.stats "%j", @_stats()
 
+  _shouldIntercept: (property) =>
+    return includes(@toInterceptMethods, property) if @toInterceptMethods?
+    return not includes(@toNotInterceptMethods, property) if @toNotInterceptMethods?
+    return true
+
   _doCall: ({ target, method, args }, callback) =>
     debug.general "Doing call %s - %j", method, args
     debug.stats "%j", @_stats()
@@ -29,7 +37,3 @@ class RateLimitInterceptor
     .asCallback callback
 
   _stats: => { idle: @q.idle(), length: @q.length(), running: @q.running() }
-
-module.exports = (obj, concurrency) ->
-  interceptor = new RateLimitInterceptor concurrency
-  new Proxy obj, interceptor

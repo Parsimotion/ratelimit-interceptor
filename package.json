@@ -4,8 +4,7 @@
   "description": "ratelimit-interceptor",
   "main": "index.js",
   "scripts": {
-    "test": "grunt test",
-    "prepublish": "grunt build"
+    "test": "grunt test"
   },
   "repository": {
     "type": "git",
@@ -14,7 +13,8 @@
   "dependencies": {
     "async": "^2.5.0",
     "debug": "^3.1.0",
-    "lodash.isfunction": "^3.0.8"
+    "lodash.isfunction": "^3.0.8",
+    "lodash.includes": "^3.0.8"
   },
   "devDependencies": {
     "bluebird": "^3.5.1",
