@@ -68,8 +68,8 @@ describe "RateLimit Interceptor", ->
     )
 
     assertion_evaluator(
-      "should intercept if the method isn't in any of the lists",
-      true, { toNotInterceptMethods: ["oneMethod"], toInterceptMethods: ["otherMethod"] }
+      "should not intercept if the method isn't in any of the lists",
+      false, { toNotInterceptMethods: ["oneMethod"], toInterceptMethods: ["otherMethod"] }
     )
 
     assertion_evaluator(
